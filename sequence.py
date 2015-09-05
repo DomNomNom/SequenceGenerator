@@ -13,7 +13,12 @@ Example use:
     sequence(2,4,8,...,64)  --> 2,4,8,16,32,64
 
 
+In cases of ambiguity the simplest function will be used. (the ordering is defined in guessFunctions.py)
+
 Optionally, a guessFunction can be explicitely specified such that we consistently use that one instead of guessing
+Example use:
+    testSequence(7,...,71, guessFunction=guessFunctions.guess_primes)
+
 """
 def sequence(*args, guessFunction=None):
     assert args.count(Ellipsis) == 1, "you must give this function an ellipsis (...) otherwise it's no fun."
@@ -33,7 +38,8 @@ def sequence(*args, guessFunction=None):
     guesses = list(filter(lambda x: x, guesses))
 
     assert len(guesses) > 0, "I couldn't guess the sequence you wanted"
-    assert len(guesses) == 1, "The given sequence is ambiguous. I have multiple candidates which fit your description but would give different results: {}".format(guesses)
+
+    # assert len(guesses) == 1, "The given sequence is ambiguous. I have multiple candidates which fit your description but would give different results: {}".format(guesses)
 
     return guesses[0]
 
@@ -43,16 +49,18 @@ def sequence(*args, guessFunction=None):
 def main():
 
     # prints a finite amount of the generated sequence
-    def testSequence(*args):
-        seq = sequence(*args)
-        print (list(itertools.islice(seq, 20)))
+    def testSequence(*args, **kwargs):
+        seq = sequence(*args, **kwargs)
+        print(list(itertools.islice(seq, 20)))
 
     # lets test it
-    # testSequence(20,...,12)
-    # testSequence(3,6,9,...)
-    # testSequence(2,4,8,...,64)
+    testSequence(3,...)
+    testSequence(20,...,12)
+    testSequence(3,6,9,...)
+    testSequence(2,4,8,...,64)
     testSequence(3,6,9,12, ..., 27,30)
     testSequence(3,0,-3,...,-9)
+    testSequence(7,...,71, guessFunction=guessFunctions.guess_primes)
 
 if __name__ == '__main__':
     main()

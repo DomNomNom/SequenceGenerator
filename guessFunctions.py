@@ -1,5 +1,7 @@
 import itertools
 
+import sequence  # cyclic inclusion works fine :>
+
 # utility funtion which returns sequential pairs of a list
 # pairs([1, 11, 111, 1111])  --> [(1, 11), (11, 111), (111, 1111)]
 # pairs([1]) --> []
@@ -84,7 +86,7 @@ def guess_exponential(pre, post):
     assert len(myPairs) >= 2
     for first, second in myPairs:
         if first == 0: return # let's not divide by zero
-        pairStep = second // first
+        pairStep = second / first
         if firstStep:
             step = pairStep
             firstStep = False
@@ -94,6 +96,10 @@ def guess_exponential(pre, post):
 
     if not consistentStep:
         return
+
+    if step != int(step):
+        return
+    step = int(step)
 
     start = pre[0]  # the beginning of the sequence
     if step == 0:
@@ -119,12 +125,53 @@ def guess_exponential(pre, post):
         return exponentialGenerator()
 
 
+primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293] # ...
+primes_set = set(primes)
+def guess_primes(pre, post):
+    # TODO: support arbitrarily high primes
+    #       currently we only support a finite list of primes to keep it simple
 
+    # def isPrime(n):
+    #     # note: this is really naiive prime checking for the sake of briefness.
+    #     if n in primes_set: return True
+    #     if n < 2: return False
+    #     for d in range(2, n):
+    #         if n%d == 0:
+    #             return False
+    #     return True
 
-# grab all guess functions in this scope and put it in the list
+    # ensure all givent numbers are prime
+    if not all( number in primes_set for number in (pre + post) ):
+        return
+
+    # guess the sequence of the indecies
+    # TODO: binary search for efficiency
+    indecies = (
+        [ primes.index(prime) for prime in pre  ] +
+        [ ...                                   ] +
+        [ primes.index(prime) for prime in post ]
+    )
+    try:
+        indexSequence = sequence.sequence(*indecies)  # Yay recursion!
+    except:
+        return  # our index sequence matches no pattern
+
+    # def exponentialGenerator():
+    #     current = start
+    #     while abs(current) <= abs(end) or not haveEnd:
+    #         yield current
+    #         current *= step
+    def sequenceOfPrimesGenerator():
+        for index in indexSequence:
+            yield primes[index]
+
+    return sequenceOfPrimesGenerator()
+
 guessFunctions = [
-    function for name, function in locals().items()
-    if name.startswith('guess_') and callable(function)
+    guess_step1,
+    guess_linear,
+    guess_exponential,
+    guess_primes,
 ]
 
 
