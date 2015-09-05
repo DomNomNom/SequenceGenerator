@@ -8,8 +8,8 @@ def pairs(lst):
     return zip(lst[:-1], lst[1:])
 
 
-
-# special case when we only have one thing before the ellipsis
+# A sequence stepping by 1.
+# for when we only have one thing before the ellipsis
 def guess_step1(pre, post):
     if len(pre) != 1:
         return
@@ -61,7 +61,12 @@ def guess_linear(pre, post):
     else:
         # assert line through start goes through end
         if len(post):
-            assert False, 'not implemented'
+            end = post[-1]
+            if abs(end - start) % step != 0:  # will we end up and the last one?
+                return False
+            # numItems = abs(end - start) // step
+            # return itertools.islice(itertools.count(start, step), numItems+1)
+            return itertools.chain(range(start, end, step), [end])
         else:
             return itertools.count(start, step)
 
@@ -78,6 +83,7 @@ def guess_exponential(pre, post):
     myPairs = list(itertools.chain(pairs(pre), pairs(post)))
     assert len(myPairs) >= 2
     for first, second in myPairs:
+        if first == 0: return # let's not divide by zero
         pairStep = second // first
         if firstStep:
             step = pairStep
@@ -114,14 +120,15 @@ def guess_exponential(pre, post):
 
 
 
+
+# grab all guess functions in this scope and put it in the list
 guessFunctions = [
-    guess_step1,
-    guess_linear,
-    guess_exponential,
+    function for name, function in locals().items()
+    if name.startswith('guess_') and callable(function)
 ]
 
 
-
 if __name__ == '__main__':
+    # you probably wanted to run sequence.py rather than this
     from sequence import main
     main()
