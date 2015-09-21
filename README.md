@@ -8,3 +8,5 @@ Example use:
     sequence(2,4,8,...,64)  --> 2,4,8,16,32,64
     sequence(3,-3,3,-3,...) --> 3,-3,3,-3,3,-3...
     sequence(7,...,71, guessFunction=guessFunctions.guess_primes)  # primes from 7..71
+
+Note: This code is written for Python 3.
